@@ -1,0 +1,97 @@
+{% extends 'coaching/base.html' %}
+
+{% block title %}Create Wheel Assessment - Klare Methode{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-2xl w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Wheel of Life Assessment
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Rate your satisfaction in each life area (1-10)
+      </p>
+    </div>
+    <form class="mt-8 space-y-6" action="{% url 'wheel_assessment_create' %}" method="POST">
+      {% csrf_token %}
+
+      <!-- Title -->
+      <div>
+        <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">Assessment Title</label>
+        <input id="{{ form.title.id_for_label }}" name="{{ form.title.html_name }}" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., Monthly Check-in" value="{{ form.title.value|default_if_none:'' }}">
+        {% if form.title.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Life Areas -->
+      <div class="space-y-6">
+        <h3 class="text-lg font-medium text-gray-900">Rate each area (1 = Very Dissatisfied, 10 = Completely Satisfied)</h3>
+
+        {% for field in form %}
+          {% if field.name != 'title' and field.name != 'notes' %}
+            <div>
+              <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+              <select id="{{ field.id_for_label }}" name="{{ field.html_name }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <option value="1" {% if field.value == 1 %}selected{% endif %}>1</option>
+                <option value="2" {% if field.value == 2 %}selected{% endif %}>2</option>
+                <option value="3" {% if field.value == 3 %}selected{% endif %}>3</option>
+                <option value="4" {% if field.value == 4 %}selected{% endif %}>4</option>
+                <option value="5" {% if field.value == 5 %}selected{% endif %}>5</option>
+                <option value="6" {% if field.value == 6 %}selected{% endif %}>6</option>
+                <option value="7" {% if field.value == 7 %}selected{% endif %}>7</option>
+                <option value="8" {% if field.value == 8 %}selected{% endif %}>8</option>
+                <option value="9" {% if field.value == 9 %}selected{% endif %}>9</option>
+                <option value="10" {% if field.value == 10 %}selected{% endif %}>10</option>
+              </select>
+              {% if field.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700">Additional Notes (Optional)</label>
+        <textarea id="{{ form.notes.id_for_label }}" name="{{ form.notes.html_name }}" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Any reflections or additional thoughts...">{{ form.notes.value|default_if_none:'' }}</textarea>
+        {% if form.notes.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.notes.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="rounded-md bg-red-50 p-4">
+          <div class="flex">
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                There were some errors with your submission:
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul role="list" class="list-disc pl-5 space-y-1">
+                  {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          </span>
+          Complete Assessment
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

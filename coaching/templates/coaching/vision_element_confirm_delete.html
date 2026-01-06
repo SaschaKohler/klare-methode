@@ -1,0 +1,43 @@
+{% extends 'coaching/base.html' %}
+
+{% block title %}Delete Vision Element - Klare Methode{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-6 sm:px-6 lg:px-8">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Delete Vision Element
+      </h3>
+      <div class="mt-2 max-w-xl text-sm text-gray-500">
+        <p>Are you sure you want to delete this vision element? This action cannot be undone.</p>
+      </div>
+      <div class="mt-4">
+        <div class="max-w-xs mx-auto bg-white border-2 border-gray-200 flex items-center justify-center p-4 rounded-lg">
+          {% if element.element_type == 'image' and element.image %}
+            <img src="{{ element.image.url }}" alt="{{ element.title }}" class="max-w-full max-h-32 object-cover rounded">
+          {% else %}
+            <div class="text-center flex items-center justify-center rounded p-2" style="color: {{ element.text_color|default:'#000000' }}; font-size: {{ element.font_size|default:16 }}px; background-color: {{ element.color|default:'#f3f4f6' }}; font-weight: 600; border: 2px solid #e5e7eb; min-height: 64px;">
+              {{ element.content|truncatechars:50 }}
+            </div>
+          {% endif %}
+        </div>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          {% if element.title %}{{ element.title }}{% else %}{{ element.get_element_type_display }}{% endif %}
+        </p>
+      </div>
+      <div class="mt-5 flex space-x-3">
+        <a href="{% url 'vision_element_detail' element.pk %}" class="flex-1 inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Cancel
+        </a>
+        <form method="post" class="flex-1">
+          {% csrf_token %}
+          <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm bg-red-600 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

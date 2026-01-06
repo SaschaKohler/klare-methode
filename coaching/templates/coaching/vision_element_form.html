@@ -1,0 +1,136 @@
+{% extends 'coaching/base.html' %}
+
+{% block title %}Add Vision Element - Klare Methode{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Add Vision Element
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Create a new element for your vision boards
+      </p>
+    </div>
+    <form class="mt-8 space-y-6" action="{% url 'vision_element_create' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Element Type -->
+      <div>
+        <label for="{{ form.element_type.id_for_label }}" class="block text-sm font-medium text-gray-700">Element Type</label>
+        <select id="{{ form.element_type.id_for_label }}" name="{{ form.element_type.html_name }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          {% for value, display in form.element_type.field.choices %}
+            <option value="{{ value }}" {% if form.element_type.value == value %}selected{% endif %}>{{ display }}</option>
+          {% endfor %}
+        </select>
+        {% if form.element_type.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.element_type.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Title -->
+      <div>
+        <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">Title (Optional)</label>
+        <input id="{{ form.title.id_for_label }}" name="{{ form.title.html_name }}" type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Give your element a name" value="{{ form.title.value|default_if_none:'' }}">
+        {% if form.title.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Content -->
+      <div>
+        <label for="{{ form.content.id_for_label }}" class="block text-sm font-medium text-gray-700">Content</label>
+        <textarea id="{{ form.content.id_for_label }}" name="{{ form.content.html_name }}" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your text or quote...">{{ form.content.value|default_if_none:'' }}</textarea>
+        {% if form.content.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.content.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Image Upload -->
+      <div>
+        <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700">Image (Optional)</label>
+        <input id="{{ form.image.id_for_label }}" name="{{ form.image.html_name }}" type="file" accept="image/*" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        {% if form.image.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.image.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Styling Options -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Styling Options</h3>
+
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Background Color -->
+          <div>
+            <label for="{{ form.color.id_for_label }}" class="block text-sm font-medium text-gray-700">Background Color</label>
+            <input id="{{ form.color.id_for_label }}" name="{{ form.color.html_name }}" type="color" value="{{ form.color.value|default:'#ffffff' }}" class="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            {% if form.color.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.color.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Text Color -->
+          <div>
+            <label for="{{ form.text_color.id_for_label }}" class="block text-sm font-medium text-gray-700">Text Color</label>
+            <input id="{{ form.text_color.id_for_label }}" name="{{ form.text_color.html_name }}" type="color" value="{{ form.text_color.value|default:'#000000' }}" class="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            {% if form.text_color.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.text_color.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Font Size -->
+        <div>
+          <label for="{{ form.font_size.id_for_label }}" class="block text-sm font-medium text-gray-700">Font Size</label>
+          <select id="{{ form.font_size.id_for_label }}" name="{{ form.font_size.html_name }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <option value="12" {% if form.font_size.value == 12 %}selected{% endif %}>12px</option>
+            <option value="14" {% if form.font_size.value == 14 %}selected{% endif %}>14px</option>
+            <option value="16" {% if form.font_size.value == 16 %}selected{% endif %}>16px</option>
+            <option value="18" {% if form.font_size.value == 18 %}selected{% endif %}>18px</option>
+            <option value="20" {% if form.font_size.value == 20 %}selected{% endif %}>20px</option>
+            <option value="24" {% if form.font_size.value == 24 %}selected{% endif %}>24px</option>
+            <option value="28" {% if form.font_size.value == 28 %}selected{% endif %}>28px</option>
+            <option value="32" {% if form.font_size.value == 32 %}selected{% endif %}>32px</option>
+            <option value="36" {% if form.font_size.value == 36 %}selected{% endif %}>36px</option>
+            <option value="48" {% if form.font_size.value == 48 %}selected{% endif %}>48px</option>
+          </select>
+          {% if form.font_size.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.font_size.errors.0 }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="rounded-md bg-red-50 p-4">
+          <div class="flex">
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                There were some errors with your submission:
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul role="list" class="list-disc pl-5 space-y-1">
+                  {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+          </span>
+          Create Element
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

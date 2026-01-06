@@ -1,0 +1,73 @@
+{% extends 'coaching/base.html' %}
+
+{% block title %}{{ assessment.title }} - Klare Methode{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        {{ assessment.title }}
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Completed on {{ assessment.created_at|date:"M j, Y" }}
+      </p>
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Average Score -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="text-sm font-medium text-gray-900 mb-2">Overall Satisfaction</h4>
+          <div class="text-3xl font-bold text-indigo-600">{{ assessment.get_average_score }}</div>
+          <div class="text-sm text-gray-500">out of 10</div>
+        </div>
+
+        <!-- Notes -->
+        {% if assessment.notes %}
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h4 class="text-sm font-medium text-gray-900 mb-2">Notes</h4>
+            <p class="text-sm text-gray-700">{{ assessment.notes }}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Life Areas Scores -->
+      <div class="mt-6">
+        <h4 class="text-lg font-medium text-gray-900 mb-4">Life Areas</h4>
+        <div class="space-y-4">
+          {% for score_data in assessment.get_scores_with_areas %}
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-700">{{ score_data.area.name }}</span>
+                  <span class="text-sm text-gray-500">{{ score_data.score }}/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="h-2 rounded-full" style="width: {{ score_data.score }}0%; background-color: {{ score_data.area.color }}"></div>
+                </div>
+                {% if score_data.area.description %}
+                  <p class="text-xs text-gray-500 mt-1">{{ score_data.area.description }}</p>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8 flex justify-between">
+    <a href="{% url 'dashboard' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      ← Back to Dashboard
+    </a>
+    <div class="space-x-3">
+      <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Edit Assessment
+      </a>
+      <a href="{% url 'wheel_assessment_create' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        New Assessment
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

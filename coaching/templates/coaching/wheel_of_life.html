@@ -1,0 +1,172 @@
+{% extends 'coaching/base.html' %}
+{% load static %}
+
+{% block title %}Wheel of Life - Klare Methode{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Wheel of Life Assessment</h1>
+                <p class="mt-2 text-gray-600">Evaluate your satisfaction in different areas of life</p>
+            </div>
+            <a href="{% url 'wheel_assessment_create' %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                New Assessment
+            </a>
+        </div>
+    </div>
+
+    {% if assessment %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Wheel Visualization -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Life Balance Wheel</h3>
+            <div class="flex justify-center">
+                <canvas id="wheel-canvas" width="300" height="300" class="border rounded"></canvas>
+            </div>
+            <div class="mt-4 text-center">
+                <p class="text-sm text-gray-600">Average Score: <span class="font-semibold">{{ assessment.get_average_score }}/10</span></p>
+            </div>
+        </div>
+
+        <!-- Scores Breakdown -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Area Scores</h3>
+            <div class="space-y-4">
+                {% for score_data in assessment.get_scores_with_areas %}
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium text-gray-700">{{ score_data.area.name }}</span>
+                        <span class="text-sm text-gray-600">{{ score_data.score }}/10</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full transition-all duration-300" style="width: {{ score_data.score|mul:10 }}%; background-color: {{ score_data.area.color }}"></div>
+                    </div>
+                    {% if score_data.area.description %}
+                        <p class="text-xs text-gray-500 mt-1">{{ score_data.area.description }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Improvement Areas -->
+    <div class="mt-8 bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Areas for Improvement</h3>
+        {% if assessment.improvement_areas %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for area in assessment.improvement_areas %}
+            <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-4">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm font-medium text-yellow-800">{{ area|title }}</span>
+                </div>
+                <p class="mt-1 text-xs text-yellow-700">Score: {{ assessment.scores|get_item:area }}/10</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">Great job! All areas are scoring well (7+). Keep up the good work!</p>
+        {% endif %}
+    </div>
+
+    <!-- Goals by Area -->
+    <div class="mt-8 bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Goals by Life Area</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for area, goals in goals_by_area.items %}
+            <div>
+                <h4 class="font-medium text-gray-900 mb-2">{{ area|title }}</h4>
+                {% if goals %}
+                <ul class="space-y-2">
+                    {% for goal in goals %}
+                    <li class="flex items-center justify-between text-sm">
+                        <span class="text-gray-700">{{ goal.title }}</span>
+                        <span class="text-xs text-gray-500">{{ goal.progress }}%</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-sm text-gray-500">No goals set for this area</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <!-- No Assessment Yet -->
+    <div class="bg-white shadow rounded-lg p-12 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No assessments yet</h3>
+        <p class="mt-1 text-sm text-gray-500">Take your first Wheel of Life assessment to see your life balance.</p>
+        <div class="mt-6">
+            <a href="{% url 'wheel_assessment_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                Start Assessment
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if assessment %}
+<script>
+// Simple wheel visualization using Canvas
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 120;
+
+    // Get scores with area information
+    const scoresData = {{ assessment.get_scores_with_areas|safe }};
+    const numAreas = scoresData.length;
+    const angleStep = (2 * Math.PI) / numAreas;
+
+    // Draw wheel segments
+    scoresData.forEach((scoreData, index) => {
+        const score = scoreData.score;
+        const area = scoreData.area;
+        const startAngle = index * angleStep - Math.PI / 2;
+        const endAngle = (index + 1) * angleStep - Math.PI / 2;
+
+        // Segment
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, (score / 10) * radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = area.color;
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Label
+        const labelAngle = startAngle + angleStep / 2;
+        const labelRadius = radius + 30;
+        const labelX = centerX + Math.cos(labelAngle) * labelRadius;
+        const labelY = centerY + Math.sin(labelAngle) * labelRadius;
+
+        ctx.fillStyle = '#374151';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(area.name.substring(0, 10), labelX, labelY);
+    });
+
+    // Draw center circle
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.stroke();
+});
+</script>
+{% endif %}
+{% endblock %}

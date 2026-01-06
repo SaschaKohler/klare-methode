@@ -1,0 +1,94 @@
+{% extends 'coaching/base.html' %}
+
+{% block title %}{{ board.title }} - Klare Methode{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">{{ board.title }}</h1>
+          <p class="mt-1 text-sm text-gray-600">
+            {% if board.description %}
+              {{ board.description }}
+            {% else %}
+              Your personal vision board
+            {% endif %}
+          </p>
+          <p class="mt-2 text-xs text-gray-500">
+            Created {{ board.created_at|date:"M j, Y" }} •
+            {% if board.is_active %}Active{% else %}Inactive{% endif %}
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <a href="{% url 'vision_board_edit' pk=board.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+            Edit Board
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vision Board Canvas -->
+  <div class="mt-8 bg-gray-100 shadow sm:rounded-lg overflow-hidden border-2 border-gray-300">
+    <div class="relative bg-gradient-to-br from-blue-50 to-indigo-50 overflow-auto" style="min-height: 600px; max-height: 800px;">
+      <!-- Grid background -->
+      <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, #6366f1 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+      {% for element_info in elements_data %}
+        {% with element_data=element_info.layout element=element_info.element %}
+        <div class="absolute overflow-hidden rounded-lg shadow-lg border-2 border-white"
+             style="left: {{ element_data.x }}px; top: {{ element_data.y }}px; width: {{ element_data.width|default:200 }}px; height: {{ element_data.height|default:150 }}px; transform: rotate({{ element_data.rotation|default:0 }}deg); z-index: {{ element_data.z_index|default:0 }};">
+          {% if element and element.element_type == 'image' and element.image %}
+            <img src="{{ element.image.url }}" alt="{{ element.title|default:element.content }}" class="w-full h-full object-cover">
+          {% elif element and element.element_type == 'text' %}
+            <div class="w-full h-full flex items-center justify-center p-3 text-center rounded-lg shadow-inner font-semibold"
+                 style="color: {{ element.text_color }}; background-color: {{ element.color }}; font-size: {{ element.font_size }}px;">
+              {{ element.content }}
+            </div>
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center p-3 text-center rounded-lg shadow-inner font-semibold"
+                 style="color: {{ element_data.text_color|default:'#000000' }}; background-color: {{ element_data.color|default:'#ffffff' }};">
+              {{ element_data.content|default:'Element' }}
+            </div>
+          {% endif %}
+        </div>
+        {% endwith %}
+      {% empty %}
+        <div class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">Empty Vision Board</h3>
+            <p class="mt-1 text-sm text-gray-500">Start building your vision by editing this board.</p>
+            <div class="mt-6">
+              <a href="{% url 'vision_board_edit' pk=board.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                Edit Board
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="mt-8 flex justify-between">
+    <a href="{% url 'vision_board_list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      ← Back to Vision Boards
+    </a>
+    <a href="{% url 'vision_board_create' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      Create New Board
+    </a>
+  </div>
+</div>
+{% endblock %}
